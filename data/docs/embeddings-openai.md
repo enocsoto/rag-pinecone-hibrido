@@ -1,0 +1,11 @@
+# Embeddings con text-embedding-3-small
+
+El modelo text-embedding-3-small de OpenAI devuelve un vector denso de 1536 dimensiones por defecto. Ese número tiene que coincidir con la dimensión del índice de Pinecone. El mismo texto, pasado por text-embedding-3-large, no se puede consultar contra un índice armado con el modelo small: los espacios no son comparables aunque alguien recorte el vector a mano.
+
+La métrica cosine mira el ángulo, no la magnitud. Dos párrafos que hablan de lo mismo quedan cerca aunque uno sea más largo. Por eso el índice de este módulo se crea con metric cosine. Un índice dotproduct exigiría normalizar los vectores de otra forma y no es el que arma setup_index.
+
+El texto que se embebe es el chunk, no el título suelto. La metadata no entra al modelo salvo que se concatene al texto antes de embedir. En este pipeline el embedding se calcula solo con page_content. La fuente, la categoría y el número de chunk viajan al lado, en metadata, y sirven para filtrar o para evaluar, no para mover el vector.
+
+La clave OPENAI_API_KEY se lee desde el entorno. No va en el código ni en el README. Si la clave falta, la ingesta se detiene antes de abrir el índice. Reintentar un lote fallido es seguro porque el id del chunk es estable: el segundo upsert pisa el primero. No se generan ids aleatorios, porque un golden set no podría apuntar a un uuid nuevo en cada corrida.
+
+text-embedding-3-small acepta un parámetro dimensions para achicar el vector. Este pipeline no lo usa. Pedir 512 dimensiones y subirlas a un índice de 1536 es el mismatch que el enunciado pide evitar. La llamada de embeddings va en tandas, no de un texto por request, porque el SDK de LangChain parte embed_documents en lotes. El texto embebido es el chunk ya cortado por RecursiveCharacterTextSplitter. El título del archivo no se antepone al párrafo: si se antepusiera, todos los chunks del mismo documento se parecerían más entre sí que al tema del párrafo. La categoría viaja solo en metadata y no mueve el vector. El modelo small es más barato y alcanza para un corpus de cinco documentos técnicos. Pasarse a text-embedding-3-large obligaría a recrear el índice en 3072 dimensiones y a reescribir setup_index. Este repo no hace esa migración. La dimensión queda fija en 1536 a propósito, alineada con el índice serverless.

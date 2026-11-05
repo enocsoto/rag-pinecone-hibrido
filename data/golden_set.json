@@ -1,0 +1,22 @@
+[
+  {
+    "pregunta": "¿En qué región queda un índice Pinecone creado con ServerlessSpec en aws y para qué sirve el namespace tecnico?",
+    "documento_id_esperado": "pinecone-serverless.md"
+  },
+  {
+    "pregunta": "¿Cuál es el valor clásico del parámetro k1 en BM25 Okapi y qué controla?",
+    "documento_id_esperado": "bm25-okapi.md"
+  },
+  {
+    "pregunta": "¿Qué chunk_size y overlap usa RecursiveCharacterTextSplitter en este pipeline?",
+    "documento_id_esperado": "chunking.md"
+  },
+  {
+    "pregunta": "¿Cuántas dimensiones devuelve text-embedding-3-small y con qué métrica se compara en el índice?",
+    "documento_id_esperado": "embeddings-openai.md"
+  },
+  {
+    "pregunta": "¿Cómo se calcula Recall@5 si hay un solo documento relevante en el golden set?",
+    "documento_id_esperado": "metricas-rag.md"
+  }
+]
